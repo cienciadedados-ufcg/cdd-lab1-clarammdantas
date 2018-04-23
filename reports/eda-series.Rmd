@@ -1,0 +1,35 @@
+---
+title: "Análise de Séries (PROVISÓRIO)"
+author: "Clara Moraes Dantas"
+date: "21 de Abril de 2018"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+library(ggplot2)
+```
+
+```{r}
+#Pensar se a média é realmente representativa
+series_imdb <- read_csv(here("data/series_from_imdb.csv"))
+dados_a_serem_utilizados <- series_imdb %>% filter(series_name %in% c("The Killing", "Mad Men", "Sherlock"))
+
+medias_imd_por_serie <- group_by(dados_a_serem_utilizados, series_name) %>% summarize(media_imdb = mean(user_rating))
+medias <- ggplot(data=medias_imd_por_serie, aes=(x=media_imd, y=series_name)) +
+          geom_bar()
+
+medias
+```
+
+---
+A série mais bem avaliada é Sherlock
+---
