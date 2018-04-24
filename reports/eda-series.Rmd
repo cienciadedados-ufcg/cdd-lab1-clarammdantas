@@ -18,19 +18,20 @@ library(here)
 library(ggplot2)
 library(plotly)
 ```
-###Análise das Séries Com Dados IMDB
+###Mad Men, Sherlock e The Killing segundo o IMDB
 
 Foram escolhidas três séries para esta análise, Mad Men, Sherlock e The Killing.
 
-A média das notas dadas pelos usuários a cada episódio das séries analisadas não são muito diferentes, sendo a maior nota, 8.8, de Sherlock. A nota de cada episódio é ponderada, levando em conta quantas pessoas votaram e a nota que cada uma deu.
-
-```{r echo=FALSE}
+```{r}
 #Pensar se a média é realmente representativa
-series_a_serem_analisadas = read_csv(here("data/series_from_imdb.csv")) %>%
+series_a_serem_analisadas = read_csv(here("data/series_from_imdb.csv"),
+                                     progress = FALSE) %>%
                             filter(series_name %in% c("Mad Men", "Sherlock", "The Killing"))
 
 medias_imd_por_serie = group_by(series_a_serem_analisadas, series_name) %>% summarize(media_imdb = mean(user_rating))
 ```
+
+Calculamos a nota IMDB de cada série fazendo uma média das notas, dadas pelos espectadores, de cada episódio. Essa nota, por sua vez, é calculada fazendo-se uma média ponderada das notas, variando de 1 a 10, e a quantidade de pessoas que votaram. Portanto, podemos supor que nossa nota IMDB é representativa. Dito isto, temos que dentre as séries escolhidas, a maior nota é a de Sherlock, aproximadamente 8.9, porém as outras não não estão muito longe disso.
 
 ```{r}
 medias_series = plot_ly(medias_imd_por_serie,
