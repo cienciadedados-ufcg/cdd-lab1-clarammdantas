@@ -30,7 +30,8 @@ medias_imd_por_serie = group_by(series_a_serem_analisadas, series_name) %>%
                        summarize(media_imdb = mean(user_rating))
 ```
 
-Calculamos a média IMDB de cada série fazendo uma média das notas, dadas pelos espectadores, de cada episódio. Essa nota, por sua vez, é calculada fazendo-se uma média ponderada das notas, variando de 1 a 10, e a quantidade de pessoas que votaram. Portanto, podemos suspeitar que nossa média IMDB é representativa. Dito isto, temos que, dentre as séries escolhidas, a maior nota é a de Sherlock, aproximadamente 8.9, porém as outras não não estão muito longe disso.
+Calculamos a média IMDB de cada série fazendo uma média das notas, dadas pelos espectadores, de cada episódio. Essa nota, por sua vez, é calculada fazendo-se uma média ponderada das notas, variando de 1 a 10, e a quantidade de pessoas que votaram. Portanto, podemos suspeitar que nossa média IMDB é representativa, ou seja, a nota da maioria das pessoas está em torno dessa média.
+Dito isto, temos que, dentre as séries escolhidas, a maior nota é a de Sherlock, aproximadamente 8.9, porém as outras não não estão muito longe disso.
 
 ```{r}
 medias_series = plot_ly(medias_imd_por_serie,
@@ -45,7 +46,7 @@ medias_series = plot_ly(medias_imd_por_serie,
 medias_series
 ```
 
-No entanto, podemos ver que a The Killing é a que possui uma distribuição de notas mais homogênea, enquanto que a dispersão das notas dos episódios de Mad Men e Sherlock são maiores. Sendo Mad Men a que tem uma maior distância entre a menor e maior nota atribuida. Além disso, podemos perceber que a mediana e a média de cada série estão próximas uma da outra, confirmando que a média é representativa.
+No entanto, podemos ver que The Killing é a que possui uma distribuição de notas mais homogênea, as pessoas votaram de forma mais parecida, enquanto que a dispersão das notas dos episódios de Mad Men e Sherlock são maiores, tendo uma maior diferença entre os votos de cada pessoa. Sendo Mad Men a que tem uma maior distância entre a menor e maior nota atribuida. Além disso, podemos perceber que a mediana e a média de cada série estão próximas uma da outra, confirmando que a média representa bem o que as pessoas acham dessas três séries.
 
 ```{r}
 variacoes_notas = plot_ly(series_a_serem_analisadas,
@@ -60,7 +61,7 @@ variacoes_notas
 
 ###Mas será que as avaliações das séries mudam muito de acordo com a temporada?
 
-No gráfico abaixo, podemos observar dois casos interessantes. O público parece não ter gostado muito da última temporada de Sherlock, pois a avaliação da quarta temporada caiu 0.625 em relação a terceira, e é a nota mais baixa atribuída à série. Já The Killing, por mais estranho que pareça, principalmente para quem viu a nota da série no Rotten Tomatoes, parece agradar cada vez mais ao público, mostrando um gráfico sempre crescente.
+No gráfico abaixo, podemos observar dois casos interessantes. O público parece não ter gostado muito da última temporada de Sherlock, pois a avaliação da quarta temporada caiu 0.625 em relação a terceira, e é a nota mais baixa atribuída à série. Já The Killing, por mais estranho que pareça, principalmente para quem viu a nota da série no Rotten Tomatoes, parece agradar cada vez mais ao público, mostrando um gráfico sempre crescente. Com relação a Mad Men, as notas não variam muito sempre maior que 8 e menor que 9. Contudo, vemos que a quinta e sexta temporada não são as favoritas.
 
 ```{r}
 media_por_temporada = aggregate(series_a_serem_analisadas$user_rating,
