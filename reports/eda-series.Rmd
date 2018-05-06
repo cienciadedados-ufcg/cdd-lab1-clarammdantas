@@ -1,13 +1,13 @@
 ---
-title: "Análise de Séries (PROVISÓRIO)"
+title: "Mad Men, Sherlock e The Killing Segundo o IMDB"
 author: "Clara Moraes Dantas"
 date: "21 de Abril de 2018"
 output:
-  html_notebook:
-    toc: yes
-    toc_float: yes
   html_document:
     df_print: paged
+    toc: yes
+    toc_float: yes
+  html_notebook:
     toc: yes
     toc_float: yes
 ---
@@ -16,20 +16,73 @@ output:
 library(tidyverse)
 library(here)
 library(ggplot2)
+library(plotly)
+```
+###Qual a série mais bem avaliada? A diferença entre as notas IMDB de cada séries é muito grande?
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+series_a_serem_analisadas = read_csv(here("data/series_from_imdb.csv"),
+                                     progress = FALSE) %>%
+                            filter(series_name %in% c("Mad Men", "Sherlock", "The Killing"))
+
+medias_imd_por_serie = group_by(series_a_serem_analisadas, series_name) %>%
+                       summarize(media_imdb = mean(user_rating))
 ```
 
-```{r}
-#Pensar se a média é realmente representativa
-series_imdb <- read_csv(here("data/series_from_imdb.csv"))
-dados_a_serem_utilizados <- series_imdb %>% filter(series_name %in% c("The Killing", "Mad Men", "Sherlock"))
+Calculamos a média IMDB de cada série fazendo uma média das notas, dadas pelos espectadores, de cada episódio. Essa nota, por sua vez, é calculada fazendo-se uma média ponderada das notas, variando de 1 a 10, e a quantidade de pessoas que votaram. Portanto, podemos suspeitar que nossa média IMDB é representativa, ou seja, a nota da maioria das pessoas está em torno dessa média.
+Dito isto, temos que, dentre as séries escolhidas, a maior nota é a de Sherlock, aproximadamente 8.9, porém as outras não não estão muito longe disso.
 
-medias_imd_por_serie <- group_by(dados_a_serem_utilizados, series_name) %>% summarize(media_imdb = mean(user_rating))
-medias <- ggplot(data=medias_imd_por_serie, aes=(x=media_imd, y=series_name)) +
-          geom_bar()
-
-medias
+```{r warning=FALSE}
+medias_series = plot_ly(medias_imd_por_serie,
+                        x = ~series_name,
+                        y = ~media_imdb,
+                        name = "Média IMDB Séries",
+                        type = "bar",
+                        color = ~series_name) %>%
+                        layout(yaxis = list(title = "Média IMDB"),
+                               xaxis = list(title = "Séries"),
+                               barmode = "group")
+medias_series
 ```
 
----
-A série mais bem avaliada é Sherlock
----
+No entanto, podemos ver que The Killing é a que possui uma distribuição de notas mais homogênea, as pessoas votaram de forma mais parecida, enquanto que a dispersão das notas dos episódios de Mad Men e Sherlock são maiores, tendo uma maior diferença entre os votos de cada pessoa. Sendo Mad Men a que tem uma maior distância entre a menor e maior nota atribuida. Além disso, podemos perceber que a mediana e a média de cada série estão próximas uma da outra, confirmando que a média representa bem o que as pessoas acham dessas três séries.
+
+```{r warning=FALSE}
+variacoes_notas = plot_ly(series_a_serem_analisadas,
+                          x = ~series_name,
+                          y = ~user_rating,
+                          type = "box",
+                          color = ~series_name) %>%
+                          layout(yaxis = list(title = "Média IMDB"),
+                                 xaxis = list(title = "Série"))
+variacoes_notas
+```
+
+###Mas será que as avaliações das séries mudam muito de acordo com a temporada?
+
+No gráfico abaixo, podemos observar dois casos interessantes. O público parece não ter gostado muito da última temporada de Sherlock, pois a avaliação da quarta temporada caiu 0.625 em relação a terceira, e é a nota mais baixa atribuída à série. Já The Killing, por mais estranho que pareça, principalmente para quem viu a nota da série no Rotten Tomatoes, parece agradar cada vez mais ao público, mostrando um gráfico sempre crescente. Com relação a Mad Men, as notas não variam muito sempre maior que 8 e menor que 9. Contudo, vemos que a quinta e sexta temporada não são as favoritas.
+
+```{r warning=FALSE}
+media_por_temporada = aggregate(series_a_serem_analisadas$user_rating,
+                                by = list(series_name = series_a_serem_analisadas$series_name,
+                                          season = series_a_serem_analisadas$season),
+                                mean)
+
+colnames(media_por_temporada)[3] <- "season_mean"
+```
+
+```{r warning=FALSE}
+media_temporada = plot_ly(media_por_temporada,
+                          x = ~season,
+                          y = ~season_mean,
+                          color = ~series_name,
+                          type = "scatter",
+                          mode = "lines") %>%
+                  layout(yaxis = list(title = "IMDB da Temporada"),
+                         xaxis = list(title = "Temporada"))
+
+media_temporada
+```
+
+
+###Qual das séries possui notas mais irregulares por episódios?
