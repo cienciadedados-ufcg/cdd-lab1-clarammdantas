@@ -28,11 +28,11 @@ series = read_csv("/home/maria/Documentos/Estudo/cdd/cdd-lab1-clarammdantas/data
 
 Antes de responder a esta pergunta podemos tentar ter um panorama geral do comportamento das notas atribuídas a cada temporada de uma série. Nos gráficos abaixo podemos ver, por exemplo, que os produtores de American Idol foram bastante persistentes uma vez que desde a primeira teporada o show não foi bem recebido pelo público. Depois de muitos altos e baixos, na 12ª temporada quando a nota foi a segunda pior da sua história, as temporadas seguintes vêm mostrando um crescimento bastante alto atingindo a nota máxima, 6.72 na 15ª temporada.
 
-Porém também podemos observar casos em que aparentemente os produtores não souberam quando parar. Os Simpsons ilustram bem essa situação. A série passa bastante tempo bem sucedida mas a partir mais ou menos da 11ª temporada, sua nota começa a cair bastante chegando a 6.67 na 28ª temporada.
+Porém também podemos observar casos em que aparentemente os produtores não souberam quando parar. Os Simpsons ilustra bem essa situação. A série passa bastante tempo bem sucedida mas a partir mais ou menos da 11ª temporada, sua nota começa a cair bastante chegando a 6.67 na 28ª temporada.
 
 Outro fato interessante é que quando começam, as séries ficam num limbo entre aproximadamente 6.8 e 9.2 e aparentemente há um processo de funilamento até a 8ª temporada. Outra coisa que chama atenção é um conjunto de séries que aparecem com um traço sempre crescente até mais ou menos a 4ª temporada.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 series_by_season = series %>% 
   group_by(series_name, season) %>% 
   summarise(mean_user_rating = mean(user_rating))
@@ -42,23 +42,25 @@ series_by_season %>%
   geom_line(size = 0.1, alpha = 0.5)
 ```
 
-```{r message=FALSE}
+```{r message=FALSE, warning=FALSE}
 means_by_season = plot_ly(series_by_season,
                          x = ~season,
                          y = ~mean_user_rating,
                          color = ~series_name,
                          type = "scatter",
                          mode = "lines") %>% 
-  layout(showlegend = FALSE)
+  layout(showlegend = FALSE,
+         title = "Nota IMDB ao Longo das Temporadas",
+         xaxis = list(title = "Nota IMDB"),
+         yaxis = list(title = "Temporada"))
 
 means_by_season
 
-#usually, how many seasons has successful serie?
 ```
 
 Mas para de fato responder a esta pergunta, devemos checar se existe uma correlação linear entre a quantidade de temporadas e a nota "absoluta" de uma série. Sendo a nota "absoluta" a média de todas as avaliações dadas àquela série.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 absolute_mean_series = series %>%
   group_by(series_name) %>%
   summarise(mean_user_rating = mean(user_rating),
@@ -78,20 +80,19 @@ seasons_vs_user_rating = absolute_mean_series %>%
 seasons_vs_user_rating
 ```
 
-Já pelo gráfico, podemos deduzir que não há uma correlação linear forte entre a nota de uma série e o total de temporadas dela. O que se confirma ao calcularmos o coeficiente linear de Pearson, que é igual a 0.048, como é próximo de zero, podemos afirmar que a correlação linear é fraca entre as variáveis. Mas podemos observar que aparentemente quanto mais temporadas mais as notas convergem para 8. Esse seria o funil observado nos gráficos anteriores.
-
-```{r}
+```{r message=FALSE, warning=FALSE}
 cor(absolute_mean_series$total_seasons, absolute_mean_series$mean_user_rating,
     method = "pearson")
 ```
+Já pelo gráfico, podemos deduzir que não há uma correlação linear forte entre a nota de uma série e o total de temporadas dela. O que se confirma ao calcularmos o coeficiente linear de Pearson, que é igual a 0.048, como é próximo de zero, podemos afirmar que a correlação linear entre as variáveis é fraca. Mas podemos observar que aparentemente quanto mais temporadas mais as notas convergem para 8. Esse seria o funil observado nos gráficos anteriores.
 
-####Geralmente, quantas temporadas as séries de sucesso têm?
+###Geralmente, quantas temporadas as séries de sucesso têm?
 
 Consideraremos séries de sucesso, aquelas que possuem nota acima de 8.9.
 
 O fato de não haver correlação entre a quantidade de séries e sua nota IMDB também fica evidenciado aqui, uma vez que as séries variam de 1 a 6 temporadas. Mas existe uma concentração maior de séries bem sucedidas com 2 e 3 temporadas.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 success_series = absolute_mean_series %>% 
   filter(mean_user_rating > 8.9)
 
@@ -120,18 +121,20 @@ ggplotly(density_success_series)
 
 Consideraremos novamente as séries com avaliação acima de 8.9 como bem sucedidas.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 badly_rated_series = series_by_season %>% 
   group_by(series_name) %>% 
   filter(mean_user_rating <= 8.9)
 
 well_rated_series = series_by_season %>% 
-  filter(!(series_name %in% bad_rated_series$series_name))
+  filter(!(series_name %in% badly_rated_series$series_name))
 ```
 
-Até agora, as únicas séries que conseguiram se manter bem avaliadas em todas as temporadas, foram Super Girl, The Originals, Daredevi, Person of Interest e Outlander.
 
-```{r}
+Até agora, as únicas séries que conseguiram se manter bem avaliadas em todas as temporadas, foram Super Girl, The Originals, Daredevil, Person of Interest e Outlander.
+
+
+```{r message=FALSE, warning=FALSE}
 plot_well_rated_series = well_rated_series %>% 
   plot_ly(x = ~season,
           y = ~mean_user_rating,
@@ -148,10 +151,35 @@ plot_well_rated_series = well_rated_series %>%
 plot_well_rated_series
 ```
 
-####Quais séries se mantiveram mal avaliadas em todas as suas temporadas?
+###Quais séries se mantiveram mal avaliadas em todas as suas temporadas?
 Consideraremos uma série mal avaliada aquelas que possuem nota abaixo de 7.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
+ok_series = series_by_season %>% 
+  filter(mean_user_rating > 7)
 
+badly_rated_series_all_seasons = series_by_season %>% 
+  filter(!(series_name %in% ok_series$series_name))
 ```
 
+Usando esses parêmtros de nota, podemos dizer que são produzidas mais séries de má qualidade que séries de boa qualidade. Nota-se também que a maioria das séries que na primeira temporada obtiveram nota menor que 7, não continuaram.
+
+```{r message=FALSE, warning=FALSE}
+plot_bad_series = badly_rated_series_all_seasons %>%
+  plot_ly(x = ~season,
+          y = ~mean_user_rating,
+          color = ~series_name,
+          type = "scatter",
+          mode = "lines") %>%
+  add_markers(x = ~season,
+            y = ~mean_user_rating,
+            color = ~series_name) %>%
+  layout(showlegend = FALSE,
+         title = "Séries que Tiveram Todas as Temporadas Mal Avaliadas",
+         xaxis = list(title = "Temporada"),
+         yaxis = list(title = "Nota IMDB"))
+
+plot_bad_series
+```
+
+Agora, sabemos que a quantidade de temporadas de uma série não influencia sua nota IMDB, apenas 5 séries tiveram todas as suas temporadas muito bem avaliadas e existem mais séries mal avaliadas que muito bem avaliadas, o que não é estranho.
