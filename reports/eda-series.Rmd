@@ -89,5 +89,6 @@ media_temporada
 ###Qual das séries possui notas mais irregulares por episódios?
 
 ```{r}
-
+#notas_episodios = plot_ly(series_a_serem_analisadas,
+#                          x = ~)
 ```

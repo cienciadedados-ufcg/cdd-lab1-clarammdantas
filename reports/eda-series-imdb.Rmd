@@ -1,0 +1,64 @@
+---
+title: "Análise de Séries a partir de Dado do IMDB"
+author: "Maria Clara Moraes"
+date: "03/05/2018"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+  html_notebook:
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(here)
+library(plotly)
+theme_set(theme_bw())
+```
+
+```{r echo=FALSE}
+series = read_csv(here("data/series_from_imdb.csv"))
+```
+
+```{r}
+series_by_season = series %>% 
+  group_by(series_name, season) %>% 
+  summarise(mean_user_rating = mean(user_rating))
+
+series_by_season %>% 
+  ggplot(aes(x = season, y = mean_user_rating, group = series_name)) + 
+  geom_line(size = 0.1, alpha = 0.5)
+```
+
+###Is the quantity of seasons inversily proportional to the series grade?
+```{r message=FALSE}
+series_by_season = aggregate(series$user_rating,
+                             by = list(serie = series$series_name,
+                                       season = series$season),
+                            mean) #mudar para dplyr!!!!!
+                                  #fazer correlação!!!!!
+
+
+colnames(series_by_season)[3] <- "mean_user_rating"
+
+
+
+means_by_season = plot_ly(series_by_season,
+                         x = ~season,
+                         y = ~mean_user_rating,
+                         color = ~serie,
+                         type = "scatter",
+                         mode = "lines")
+means_by_season
+
+#usually, how many seasons has successful serie?
+```
+
+
+
+###Which serie kept well avaliated for the longest period of time?
+###A quantidade de temporadas de uma série é inversamente proporcional a sua nota?
+###Qual série se manteve mais bem avaliada pelo maior período de tempo?
