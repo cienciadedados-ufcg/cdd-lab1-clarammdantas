@@ -116,15 +116,42 @@ density_success_series = success_series %>%
 ggplotly(density_success_series)
 ```
 
-###Qual série se manteve mais bem avaliada pelo maior período de tempo?
+###Quais séries se mantiveram bem avaliadas em todas as temporadas?
 
 Consideraremos novamente as séries com avaliação acima de 8.9 como bem sucedidas.
 
 ```{r}
-well_rated_series = series_by_season %>% 
+badly_rated_series = series_by_season %>% 
   group_by(series_name) %>% 
-  filter(mean_user_rating > 8.9)
+  filter(mean_user_rating <= 8.9)
+
+well_rated_series = series_by_season %>% 
+  filter(!(series_name %in% bad_rated_series$series_name))
 ```
 
-####Quais séries se mantiveram mais mal avaliadas pelo maior período de tempo?
-Consideraremos uma série mal avaliada aquelas que possuem 
+Até agora, as únicas séries que conseguiram se manter bem avaliadas em todas as temporadas, foram Super Girl, The Originals, Daredevi, Person of Interest e Outlander.
+
+```{r}
+plot_well_rated_series = well_rated_series %>% 
+  plot_ly(x = ~season,
+          y = ~mean_user_rating,
+          color = ~series_name,
+          type = "scatter",
+          mode = "lines") %>% 
+  add_markers(x = ~season,
+            y = ~mean_user_rating,
+            color = ~series_name) %>% 
+  layout(title = "Series Bem Avaliadas em Todas as Temporadas",
+         xaxis = list(title = "Temporada"),
+         yaxis = list(title = "Nota IMDB"))
+
+plot_well_rated_series
+```
+
+####Quais séries se mantiveram mal avaliadas em todas as suas temporadas?
+Consideraremos uma série mal avaliada aquelas que possuem nota abaixo de 7.
+
+```{r}
+
+```
+
