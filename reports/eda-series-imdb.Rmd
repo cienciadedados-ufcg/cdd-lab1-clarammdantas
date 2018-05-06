@@ -20,8 +20,16 @@ theme_set(theme_bw())
 ```
 
 ```{r echo=FALSE}
-series = read_csv(here("data/series_from_imdb.csv"))
+series = read_csv(here("Documentos/Estudo/cdd/cdd-lab1-clarammdantas/data/series_from_imdb.csv"))
 ```
+
+### A quantidade de temporadas é inversamente proporcional à nota da série?
+
+Antes de responder a esta pergunta podemos tentar ter um panorama geral do comportamento das notas atribuídas a cada temporada de uma série. Nos gráficos abaixo podemos ver, por exemplo, que os produtores de American Idol foram bastante persistentes uma vez que desde a primeira teporada o show não foi bem recebido pelo público. Depois de muitos altos e baixos, na 12ª temporada quando a nota foi a segunda pior da sua história, as temporadas seguintes vêm mostrando um crescimento bastante alto atingindo a nota máxima, 6.72 na 15ª temporada.
+
+Porém também podemos observar casos em que aparentemente os produtores não souberam quando parar. Os Simpsons ilustram bem essa situação. A série passa bastante tempo bem sucedida mas a partir mais ou menos da 11ª temporada, sua nota começa a cair bastante chegando a 6.67 na 28ª temporada.
+
+Ainda analisando os gráficos, outro fato interessante é que as séries ficam num limbo 
 
 ```{r}
 series_by_season = series %>% 
@@ -35,21 +43,10 @@ series_by_season %>%
 
 ###Is the quantity of seasons inversily proportional to the series grade?
 ```{r message=FALSE}
-series_by_season = aggregate(series$user_rating,
-                             by = list(serie = series$series_name,
-                                       season = series$season),
-                            mean) #mudar para dplyr!!!!!
-                                  #fazer correlação!!!!!
-
-
-colnames(series_by_season)[3] <- "mean_user_rating"
-
-
-
 means_by_season = plot_ly(series_by_season,
                          x = ~season,
                          y = ~mean_user_rating,
-                         color = ~serie,
+                         color = ~series_name,
                          type = "scatter",
                          mode = "lines")
 means_by_season
