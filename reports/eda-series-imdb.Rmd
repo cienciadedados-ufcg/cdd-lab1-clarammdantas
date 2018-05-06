@@ -1,5 +1,5 @@
 ---
-title: "Análise de Séries a partir de Dado do IMDB"
+title: "Análise de Séries a partir de Dados do IMDB"
 author: "Maria Clara Moraes"
 date: "03/05/2018"
 output:
@@ -20,7 +20,7 @@ theme_set(theme_bw())
 ```
 
 ```{r echo=FALSE}
-series = read_csv(here("Documentos/Estudo/cdd/cdd-lab1-clarammdantas/data/series_from_imdb.csv"))
+series = read_csv("/home/maria/Documentos/Estudo/cdd/cdd-lab1-clarammdantas/data/series_from_imdb.csv")
 ```
 
 ### A quantidade de temporadas é inversamente proporcional à nota da série?
@@ -29,7 +29,7 @@ Antes de responder a esta pergunta podemos tentar ter um panorama geral do compo
 
 Porém também podemos observar casos em que aparentemente os produtores não souberam quando parar. Os Simpsons ilustram bem essa situação. A série passa bastante tempo bem sucedida mas a partir mais ou menos da 11ª temporada, sua nota começa a cair bastante chegando a 6.67 na 28ª temporada.
 
-Ainda analisando os gráficos, outro fato interessante é que as séries ficam num limbo 
+Outro fato interessante é que quando começam, as séries ficam num limbo entre aproximadamente 6.8 e 9.2 e aparentemente há um processo de funilamento até a 8ª temporada. Outra coisa que chama atenção é um conjunto de séries que aparecem com um traço sempre crescente até mais ou menos a 4ª temporada.
 
 ```{r}
 series_by_season = series %>% 
@@ -41,20 +41,21 @@ series_by_season %>%
   geom_line(size = 0.1, alpha = 0.5)
 ```
 
-###Is the quantity of seasons inversily proportional to the series grade?
 ```{r message=FALSE}
 means_by_season = plot_ly(series_by_season,
                          x = ~season,
                          y = ~mean_user_rating,
                          color = ~series_name,
                          type = "scatter",
-                         mode = "lines")
+                         mode = "lines") %>% 
+  layout(showlegend = FALSE)
+
 means_by_season
 
 #usually, how many seasons has successful serie?
 ```
 
-
+Mas para de fato responder a esta pergunta, devemos checar se existe uma correlação linear entre a quantidade de temporadas e a nota "absoluta" de uma série. Sendo a nota "absoluta" a média de todas as avaliações dadas àquela série. Claro que fazendo isso não estamos definindo uma fórmula para uma série de sucesso, pois obviamente outros fatores influenciam a qualidade de uma série como enredo e elenco por exemplo. Só queremos aqui saber se
 
 ###Which serie kept well avaliated for the longest period of time?
 ###A quantidade de temporadas de uma série é inversamente proporcional a sua nota?
