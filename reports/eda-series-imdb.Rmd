@@ -16,6 +16,7 @@ output:
 library(tidyverse)
 library(here)
 library(plotly)
+library(ggpubr)
 theme_set(theme_bw())
 ```
 
@@ -55,8 +56,75 @@ means_by_season
 #usually, how many seasons has successful serie?
 ```
 
-Mas para de fato responder a esta pergunta, devemos checar se existe uma correlação linear entre a quantidade de temporadas e a nota "absoluta" de uma série. Sendo a nota "absoluta" a média de todas as avaliações dadas àquela série. Claro que fazendo isso não estamos definindo uma fórmula para uma série de sucesso, pois obviamente outros fatores influenciam a qualidade de uma série como enredo e elenco por exemplo. Só queremos aqui saber se
+Mas para de fato responder a esta pergunta, devemos checar se existe uma correlação linear entre a quantidade de temporadas e a nota "absoluta" de uma série. Sendo a nota "absoluta" a média de todas as avaliações dadas àquela série.
 
-###Which serie kept well avaliated for the longest period of time?
-###A quantidade de temporadas de uma série é inversamente proporcional a sua nota?
+```{r}
+absolute_mean_series = series %>%
+  group_by(series_name) %>%
+  summarise(mean_user_rating = mean(user_rating),
+            total_seasons = n_distinct(season))
+
+seasons_vs_user_rating = absolute_mean_series %>%
+  plot_ly(x = ~total_seasons,
+          y = ~mean_user_rating,
+          marker = list(size = 10,
+                        line = list(width = 2))
+          ) %>% 
+  
+  layout(title = "Relação Entre a Nota de uma Série e Quantidade de Temporadas",
+         xaxis = list(title = "Total de Temporadas"),
+         yaxis = list(title = "Nota da Série"))
+
+seasons_vs_user_rating
+```
+
+Já pelo gráfico, podemos deduzir que não há uma correlação linear forte entre a nota de uma série e o total de temporadas dela. O que se confirma ao calcularmos o coeficiente linear de Pearson, que é igual a 0.048, como é próximo de zero, podemos afirmar que a correlação linear é fraca entre as variáveis. Mas podemos observar que aparentemente quanto mais temporadas mais as notas convergem para 8. Esse seria o funil observado nos gráficos anteriores.
+
+```{r}
+cor(absolute_mean_series$total_seasons, absolute_mean_series$mean_user_rating,
+    method = "pearson")
+```
+
+####Geralmente, quantas temporadas as séries de sucesso têm?
+
+Consideraremos séries de sucesso, aquelas que possuem nota acima de 8.9.
+
+O fato de não haver correlação entre a quantidade de séries e sua nota IMDB também fica evidenciado aqui, uma vez que as séries variam de 1 a 6 temporadas. Mas existe uma concentração maior de séries bem sucedidas com 2 e 3 temporadas.
+
+```{r}
+success_series = absolute_mean_series %>% 
+  filter(mean_user_rating > 8.9)
+
+plot_success_series = success_series %>%
+  plot_ly(x = ~total_seasons,
+          y = ~mean_user_rating,
+          type = "bar",
+          color = ~series_name) %>% 
+  layout(title = "Total de Temporadas de Séries de Sucesso",
+         xaxis = list(title = "Total de Temporadas"),
+         yaxis = list(title = "Nota IMDB"),
+         barmode = "stack")
+
+plot_success_series
+```
+
+```{r}
+density_success_series = success_series %>%
+  ggplot(aes(total_seasons)) +
+  geom_density(fill =  "#ff4d4d", alpha = 0.5)
+
+ggplotly(density_success_series)
+```
+
 ###Qual série se manteve mais bem avaliada pelo maior período de tempo?
+
+Consideraremos novamente as séries com avaliação acima de 8.9 como bem sucedidas.
+
+```{r}
+well_rated_series = series_by_season %>% 
+  group_by(series_name) %>% 
+  filter(mean_user_rating > 8.9)
+```
+
+####Quais séries se mantiveram mais mal avaliadas pelo maior período de tempo?
+Consideraremos uma série mal avaliada aquelas que possuem 
