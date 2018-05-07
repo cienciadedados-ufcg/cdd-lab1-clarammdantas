@@ -3,11 +3,11 @@ title: "Análise de Séries a partir de Dados do IMDB"
 author: "Maria Clara Moraes"
 date: "03/05/2018"
 output:
-  html_document:
-    df_print: paged
+  html_notebook:
     toc: yes
     toc_float: yes
-  html_notebook:
+  html_document:
+    df_print: paged
     toc: yes
     toc_float: yes
 ---
@@ -16,12 +16,12 @@ output:
 library(tidyverse)
 library(here)
 library(plotly)
-library(ggpubr)
+#library(ggpubr)
 theme_set(theme_bw())
 ```
 
 ```{r echo=FALSE}
-series = read_csv("/home/maria/Documentos/Estudo/cdd/cdd-lab1-clarammdantas/data/series_from_imdb.csv")
+series = read_csv("../data/series_from_imdb.csv")
 ```
 
 ### A quantidade de temporadas é inversamente proporcional à nota da série?
@@ -81,8 +81,8 @@ seasons_vs_user_rating
 ```
 
 ```{r message=FALSE, warning=FALSE}
-cor(absolute_mean_series$total_seasons, absolute_mean_series$mean_user_rating,
-    method = "pearson")
+#cor(absolute_mean_series$total_seasons, absolute_mean_series$mean_user_rating,
+#    method = "pearson")
 ```
 Já pelo gráfico, podemos deduzir que não há uma correlação linear forte entre a nota de uma série e o total de temporadas dela. O que se confirma ao calcularmos o coeficiente linear de Pearson, que é igual a 0.048, como é próximo de zero, podemos afirmar que a correlação linear entre as variáveis é fraca. Mas podemos observar que aparentemente quanto mais temporadas mais as notas convergem para 8. Esse seria o funil observado nos gráficos anteriores.
 

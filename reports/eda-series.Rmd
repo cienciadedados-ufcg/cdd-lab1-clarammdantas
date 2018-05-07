@@ -3,11 +3,11 @@ title: "Mad Men, Sherlock e The Killing Segundo o IMDB"
 author: "Clara Moraes Dantas"
 date: "21 de Abril de 2018"
 output:
-  html_document:
-    df_print: paged
+  html_notebook:
     toc: yes
     toc_float: yes
-  html_notebook:
+  html_document:
+    df_print: paged
     toc: yes
     toc_float: yes
 ---
@@ -21,7 +21,7 @@ library(plotly)
 ###Qual a série mais bem avaliada? A diferença entre as notas IMDB de cada séries é muito grande?
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-series_a_serem_analisadas = read_csv(here("data/series_from_imdb.csv"),
+series_a_serem_analisadas = read_csv("../data/series_from_imdb.csv",
                                      progress = FALSE) %>%
                             filter(series_name %in% c("Mad Men", "Sherlock", "The Killing"))
 
