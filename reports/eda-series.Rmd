@@ -21,7 +21,7 @@ library(plotly)
 ###Qual a série mais bem avaliada? A diferença entre as notas IMDB de cada séries é muito grande?
 
 ```{r echo=FALSE, warning=FALSE, message=FALSE}
-series_a_serem_analisadas = read_csv(here("data/series_from_imdb.csv"),
+series_a_serem_analisadas = read_csv(here("../data/series_from_imdb.csv"),
                                      progress = FALSE) %>%
                             filter(series_name %in% c("Mad Men", "Sherlock", "The Killing"))
 
@@ -31,6 +31,8 @@ medias_imd_por_serie = group_by(series_a_serem_analisadas, series_name) %>%
 
 Calculamos a média IMDB de cada série fazendo uma média das notas, dadas pelos espectadores, de cada episódio. Essa nota, por sua vez, é calculada fazendo-se uma média ponderada das notas, variando de 1 a 10, e a quantidade de pessoas que votaram. Portanto, podemos suspeitar que nossa média IMDB é representativa, ou seja, a nota da maioria das pessoas está em torno dessa média.
 Dito isto, temos que, dentre as séries escolhidas, a maior nota é a de Sherlock, aproximadamente 8.9, porém as outras não não estão muito longe disso.
+
+>> A escrita na parte inicial do texto ficou um pouco difícil de compreender, principalmente com relação a explicação sobre o que foi calculado no início do texto e o significado disso. Isso afetou o entendimento sobre a representatividade da variável "média IMDB", bem como o motivo por escolher a média ao invés de outra medida de centralidade, como mediana, para caracterizar as avaliaçãoes de cada série.
 
 ```{r warning=FALSE}
 medias_series = plot_ly(medias_imd_por_serie,
@@ -46,6 +48,8 @@ medias_series
 ```
 
 No entanto, podemos ver que The Killing é a que possui uma distribuição de notas mais homogênea, as pessoas votaram de forma mais parecida, enquanto que a dispersão das notas dos episódios de Mad Men e Sherlock são maiores, tendo uma maior diferença entre os votos de cada pessoa. Sendo Mad Men a que tem uma maior distância entre a menor e maior nota atribuida. Além disso, podemos perceber que a mediana e a média de cada série estão próximas uma da outra, confirmando que a média representa bem o que as pessoas acham dessas três séries.
+
+>> Para enriquecer seu raciocínio, poderia ser feita uma explicação sobre a melhor maneira para ler os gráficos. Por exemplo: de que modo ou como poderiamos ver que uma série possui uma distribuição de notas mais homogênea do que outra série? Além disso, poderia haver uma indicação no texto sobre qual dos gráficos você está falando naquele momento, pq em alguns momentos fiquei confuso nesse sentido.
 
 ```{r warning=FALSE}
 variacoes_notas = plot_ly(series_a_serem_analisadas,
@@ -84,5 +88,12 @@ media_temporada = plot_ly(media_por_temporada,
 media_temporada
 ```
 
+>> O texto poderia ser mais explícito sobre qual das duas medidas (média e mediana) discutidas anteriormente estava sendo utilizada nessa seção para explicar as avaliações, pensando no ponto de vista de um leitor que não curse a disciplina.
 
 ###Qual das séries possui notas mais irregulares por episódios?
+
+>> Essa parte não foi feita, mas fica a sugestão para a utilização de medidas de dispersão como IQR ou desvio padrão, que poderiam ajudar sua explicação e a construção de visualizações que contribuam com o seu raciocínio para responder a pergunta.
+
+> Comentários
+
+>> O relatório está muito bom, principalmente no que diz respeito aos gráficos. O ponto de melhora pode ser com relação a explicação textual, de modo que seu texto reflita melhor seu raciocínio, como a indicação do que representa cada gráfico, qual gráfico está sendo ou será abordado pelo texto em dado momento - isso facilita muito a leitura de leigos no assunto. E também sugiro a utilzação de um panorama descrevendo os dados que serão tema da análise, como forma de introduzir ao leitor o que será abordado ao longo do texto.
