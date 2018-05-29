@@ -1,0 +1,64 @@
+---
+title: "Visualização Interativa"
+author: "Maria Clara Moraes"
+date: "22 de maio de 2018"
+output:
+  html_notebook:
+    toc: yes
+    toc_float: yes
+  html document:
+    df_print: yes
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(plotly)
+```
+
+Voltamos com mais uma análise de séries usando os dados do IMDB que foram baixados a partir desse [repositório] (https://github.com/nazareno/imdb-series).
+
+### Como se comportam as notas atribuídas às temporadas das séries mais longas?
+
+Consideraremos séries longas aquelas que possuem mais de 15 temporadas.
+
+Guia rápido de como usar o gráfico caso você não esteja acostumado:
+1) Para analisar as séries isoladamente, basta você clicar nos nomes das séries que você não quer ver.
+2) Para voltar o gráfico ao normal, basta clicar novamente nas séries que você desativou.
+
+O tamanho dos pontos varia de acordo com a quantidade de votos daquela temporada, dividido pelo total de votos da série.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+series = read_csv("../data/series_from_imdb.csv")
+
+series_by_season = series %>% 
+  group_by(series_name, season) %>% 
+  summarise(mean_user_rating = mean(user_rating),
+            total_user_votes = sum(user_votes))
+
+long_series_names = series %>% 
+  filter(season > 18)
+
+long_series = series_by_season %>% 
+  filter(series_name %in% long_series_names$series_name) %>% 
+  group_by(series_name) %>% 
+  mutate(total_votes = sum(total_user_votes))
+```
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+long_series_chart = plot_ly(long_series,
+                            x = ~season,
+                            y = ~mean_user_rating,
+                            type = 'scatter',
+                            color = ~series_name,
+                            size = ~total_user_votes / total_votes * 30) %>% 
+layout(title = 'Nota IMDB ao Longo das Temporadas',
+       xaxis = list(title = 'Temporada'),
+       yaxis = list(title = 'Média da Nota dada pelo Usuário'))
+long_series_chart
+```
+
+Como podemos perceber, com exceção de Os Simpsons, as séries não apresentam nenhum padrão na nota das temporadas, aparentemente. No entando, os dados sugerem que a maioria das séries vão perdendo público quando a quantidade de temporadas vai aumentando. Comentando rapidamente o caso de Os Simpsons, talvez o destino da série tivesse sido melhor casa um analista de dados tivessse alertado os produtores sobre a eminente catástrofe. O gráfico claramente mostra uma curva, onde, depois do pico mais ou menos na sétima temporada, a nota só decresce, bem como a quantidade de pessoas que avaliam a série.
